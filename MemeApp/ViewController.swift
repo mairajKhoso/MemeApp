@@ -14,6 +14,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
     @IBOutlet weak var bottomTxtField: UITextField!
     @IBOutlet weak var cameraBtn: UIBarButtonItem!
     let imgPicker = UIImagePickerController()
+    
     @IBOutlet weak var memeImg: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +26,15 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
         bottomTxtField.delegate = self
         bottomTxtField.text = "BOTTOM"
         
+        //listen for keyboard events
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: NSNotification.Name.UIResponder.keyboardWillShowNotification, object: nil)
+        
     }
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 0{
             if topTxtField.text == "TOP" {
                 topTxtField.text = ""
+                //topTxtField.becomeFirstResponder()
             }
         }
         else if textField.tag == 1{
@@ -41,6 +46,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField.tag == 0{
             if (topTxtField.text?.isEmpty)! {
+                //topTxtField.resignFirstResponder()
                 topTxtField.text = "TOP"
             }
         }
@@ -50,11 +56,18 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
             }
         }
     }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
     
-    
+    @objc func keyboardWillChange(notification: Notification){
+        print("keyboard will show: \(notification.name.rawValue)")
+    }
     override func viewWillAppear(_ animated: Bool) {
                 cameraBtn.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
     }
+    
 
     @IBAction func pickImage(_ sender: UIBarButtonItem) {
         imgPicker.allowsEditing = false
