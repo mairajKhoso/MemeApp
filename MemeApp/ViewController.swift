@@ -8,13 +8,77 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UITextFieldDelegate {
+    
+    @IBOutlet weak var topTxtField: UITextField!
+    @IBOutlet weak var bottomTxtField: UITextField!
+    @IBOutlet weak var cameraBtn: UIBarButtonItem!
+    let imgPicker = UIImagePickerController()
+    @IBOutlet weak var memeImg: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        view.backgroundColor = UIColor.black
+        imgPicker.delegate = self
+        
+        topTxtField.delegate = self
+        topTxtField.text = "TOP"
+        bottomTxtField.delegate = self
+        bottomTxtField.text = "BOTTOM"
+        
+    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 0{
+            if topTxtField.text == "TOP" {
+                topTxtField.text = ""
+            }
+        }
+        else if textField.tag == 1{
+            if bottomTxtField.text == "BOTTOM" {
+                bottomTxtField.text = ""
+            }
+        }
+    }
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField.tag == 0{
+            if (topTxtField.text?.isEmpty)! {
+                topTxtField.text = "TOP"
+            }
+        }
+        else if textField.tag == 1{
+            if (bottomTxtField.text?.isEmpty)!{
+                bottomTxtField.text = "BOTTOM"
+            }
+        }
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+                cameraBtn.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
     }
 
-
+    @IBAction func pickImage(_ sender: UIBarButtonItem) {
+        imgPicker.allowsEditing = false
+        imgPicker.sourceType = .photoLibrary
+        present(imgPicker, animated: true, completion: nil)
+        print("button pressed")
+    }
+    
+    @IBAction func pickImageCamera(_ sender: UIBarButtonItem) {
+        
+        imgPicker.delegate = self
+        
+        present(imgPicker, animated: true, completion: nil)
+    }
+    
+    
+    //Image picker controller delegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage{
+            memeImg.contentMode = .scaleAspectFill
+            memeImg.image = pickedImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
 }
 
